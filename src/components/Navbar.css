@@ -1,0 +1,81 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family:'Gill Sans', 'Gill Sans MT', 'Calibri', 'Trebuchet MS', sans-serif;
+}
+
+nav {
+    background: #cbc3e3;
+    padding: 10px 40px 30px 70px;
+    border: 1px solid #000;
+    border-left: none;
+    border-right: none;
+    
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+    flex-wrap: none;
+    align-items: center;
+    justify-content: center;
+}
+
+nav ul li.logo {
+    color: #111;
+    flex: 1;
+    font-size: 35px;
+    font-weight: 700;
+}
+
+nav ul .search {
+    height: 40px;
+    width: 240px;
+    display: flex;
+    border-radius: 5px;
+
+}
+
+nav ul .search input{
+    height: 100%;
+    width: 200px;
+    border: none;
+    border-radius: 5px 0 0 5px;
+    outline: none;
+    padding: 0 10px;
+    color: #000;
+    font-size: 16px;
+}
+
+nav ul .search .icon {
+    height: 100%;
+    width: 40px;
+    line-height: 40px;
+    text-align: center;
+    border: 1px solid #cccccc;
+    background: #fff;
+    border-radius: 0 5px 5px 0;
+    cursor: pointer;
+}
+nav ul .search .icon:hover {
+    background: #e6e6e6;
+}
+
+nav ul .search .icon button{
+    color: #222222;
+    font-size: 18px;
+}
+.fa-solid {
+    color: #111;
+}
+
+@media screen and (max-width: 500px) {
+    nav {
+        padding: 10px 40px 10px 0px;
+    }
+    nav ul li.logo {
+        display: none;
+    }
+
+}

@@ -1,0 +1,26 @@
+[
+    {
+      "id": 1,
+      "title": "Description",
+      "key": "Processed Text",
+      "type": "HTML"
+    },
+    {
+      "id": 2,
+      "title": "Full Name",
+      "key": "full_name",
+      "type": "textfield"
+    },
+    {
+      "id": 3,
+      "title": "Organization",
+      "key": "organization_name",
+      "type": "textfield"
+    },
+    {
+      "id": 4,
+      "title": "email address",
+      "key": "email",
+      "type": "email"
+    }
+  ]
