@@ -4,7 +4,6 @@ import data from "../mock-data.json";
 import { nanoid } from 'nanoid';
 import ReadOnlyRow from './ReadOnlyRow';
 import EditableRow from './EditableRow';
-import Popup from 'reactjs-popup';
 
 const Table = () => {
 
@@ -113,7 +112,6 @@ const Table = () => {
             <button style={{width: 100, height: 50}}>add element</button>
             <button style={{width:100, height: 50}}>add page</button>
             <button style={{width: 100, height: 50}}>add layout</button>
-            <h1>*this will be a popout at some point vvvv*</h1>
             <form onSubmit={handleAddFormSubmit}>
                 <input 
                 type="text" 
