@@ -3,7 +3,7 @@
       "id": 1,
       "title": "Description",
       "key": "Processed Text",
-      "type": "HTML"
+      "type": "HTML" 
     },
     {
       "id": 2,
@@ -19,6 +19,36 @@
     },
     {
       "id": 4,
+      "title": "email address",
+      "key": "email",
+      "type": "email"
+    },
+    {
+      "id": 5,
+      "title": "email address",
+      "key": "email",
+      "type": "email"
+    },
+    {
+      "id": 6,
+      "title": "email address",
+      "key": "email",
+      "type": "email"
+    },
+    {
+      "id": 7,
+      "title": "email address",
+      "key": "email",
+      "type": "email"
+    },
+    {
+      "id": 8,
+      "title": "email address",
+      "key": "email",
+      "type": "email"
+    },
+    {
+      "id": 9,
       "title": "email address",
       "key": "email",
       "type": "email"

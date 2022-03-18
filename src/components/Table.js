@@ -22,6 +22,12 @@ const Table = () => {
 
     const [editElementId, setEditElementId] = useState(null);
 
+    const [clickElement, setClickElement] = useState(false);
+
+    const handleClickElement = () => {
+        setClickElement(!clickElement);
+    }
+
     const handleAddFormChange = (event) => {
         event.preventDefault();
 
@@ -109,26 +115,27 @@ const Table = () => {
 
     return (
         <div className="table-container">  
-            <button style={{width: 100, height: 50}}>add element</button>
+            <button style={{width: 100, height: 50,}} onClick={handleClickElement}>add element</button>
             <button style={{width:100, height: 50}}>add page</button>
             <button style={{width: 100, height: 50}}>add layout</button>
             <form onSubmit={handleAddFormSubmit}>
                 <input 
-                type="text" 
+                type={clickElement ? "text" : "hidden"} 
                 name="title" 
                 required="required" 
                 placeholder="Enter title..." 
                 onChange={handleAddFormChange}
                 />
                 <input 
-                type="text" 
+                type={clickElement ? "text" : "hidden"} 
                 name="key" 
                 required="required" 
                 placeholder="Enter key..." 
                 onChange={handleAddFormChange}
                 />
-                <label for="type">type:</label>
+                <label hidden={!clickElement && 'hidden'} for="type">type:</label>
                 <select 
+                hidden={!clickElement && 'hidden'}
                 id="type" 
                 name="type" 
                 onChange={handleAddFormChange}
@@ -139,7 +146,8 @@ const Table = () => {
                     <option value="textfield">textfield</option>
                     <option value="email">email</option>
                 </select>
-                <button type="submit">add</button>
+                <button hidden={!clickElement && 'hidden'} type="submit">add</button>
+                <button hidden={!clickElement && 'hidden'} onClick={handleClickElement} type="button">cancel</button>
             </form>
             <form onSubmit={handleEditFormSubmit}>
                 <table>
