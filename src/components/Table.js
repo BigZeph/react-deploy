@@ -140,7 +140,7 @@ const Table = () => {
                     <option value="email">email</option>
                 </select>
                 <button type="submit">add</button>
-            </form>       
+            </form>
             <form onSubmit={handleEditFormSubmit}>
                 <table>
                     <thead>

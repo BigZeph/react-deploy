@@ -3,6 +3,7 @@ import { NavLink as Link } from 'react-router-dom';
 import {FaBars} from 'react-icons/fa'
 
 export const Nav = styled.nav`
+    font-size: 30px;
     background: #cbc3e3;
     height: 80px;
     display: flex;

@@ -4,7 +4,7 @@ import {Nav, Bars, NavMenu, NavLink, NavBtn, NavBtnLink} from './NavbarElements'
 const Navbar = () => {
   return (
     <>
-      <Nav style={{fontSize: 25}}>
+      <Nav>
         <NavLink to='/'>
           Purple <i class="fa-solid fa-seedling"></i>  
         </NavLink>
@@ -21,9 +21,6 @@ const Navbar = () => {
           </NavLink>
           <NavLink to='/contact' activeStyle>
             Contact
-          </NavLink>
-          <NavLink to='/sign-up' activeStyle>
-            Sign Up
           </NavLink>
         </NavMenu>
         <NavBtn>
