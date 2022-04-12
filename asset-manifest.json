@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/BigZeph/react-deploy.git/static/css/main.110bc2c0.css",
+    "main.js": "/BigZeph/react-deploy.git/static/js/main.2bbaf7fb.js",
+    "index.html": "/BigZeph/react-deploy.git/index.html",
+    "main.110bc2c0.css.map": "/BigZeph/react-deploy.git/static/css/main.110bc2c0.css.map",
+    "main.2bbaf7fb.js.map": "/BigZeph/react-deploy.git/static/js/main.2bbaf7fb.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.110bc2c0.css",
+    "static/js/main.2bbaf7fb.js"
+  ]
+}
