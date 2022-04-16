@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/BigZeph/react-deploy.git/static/css/main.858e3353.css",
-    "main.js": "/BigZeph/react-deploy.git/static/js/main.cca99f2b.js",
-    "index.html": "/BigZeph/react-deploy.git/index.html",
-    "main.858e3353.css.map": "/BigZeph/react-deploy.git/static/css/main.858e3353.css.map",
-    "main.cca99f2b.js.map": "/BigZeph/react-deploy.git/static/js/main.cca99f2b.js.map"
+    "main.css": "/react-deploy/static/css/main.858e3353.css",
+    "main.js": "/react-deploy/static/js/main.1e2ee0c4.js",
+    "index.html": "/react-deploy/index.html",
+    "main.858e3353.css.map": "/react-deploy/static/css/main.858e3353.css.map",
+    "main.1e2ee0c4.js.map": "/react-deploy/static/js/main.1e2ee0c4.js.map"
   },
   "entrypoints": [
     "static/css/main.858e3353.css",
-    "static/js/main.cca99f2b.js"
+    "static/js/main.1e2ee0c4.js"
   ]
 }
