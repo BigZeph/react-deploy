@@ -1,0 +1,24 @@
+#viewform {
+	background-color: #9c8ad3;
+	display: inline;
+	padding: 5pt;
+	text-align: center;
+}
+
+#viewform div {
+	text-align: center;
+	width: 100%;
+}
+
+#viewform input[type=submit] {
+	background-color: #bbaaff;
+	border: 0;
+	border-radius: 5px;
+	cursor: pointer;
+	margin: 10px;
+	padding: 5px;
+}
+
+#viewform input[type=submit]:hover {
+	background-color: #aa99ee;
+}
