@@ -1,0 +1,14 @@
+.about {
+    text-align: center;
+    margin: auto;
+    width: 40%;
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+.about h1 {
+    margin-bottom: 50px;
+}
+.about p {
+    margin-top: 20px;
+}

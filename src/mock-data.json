@@ -25,32 +25,8 @@
     },
     {
       "id": 5,
-      "title": "email address",
-      "key": "email",
-      "type": "email"
-    },
-    {
-      "id": 6,
-      "title": "email address",
-      "key": "email",
-      "type": "email"
-    },
-    {
-      "id": 7,
-      "title": "email address",
-      "key": "email",
-      "type": "email"
-    },
-    {
-      "id": 8,
-      "title": "email address",
-      "key": "email",
-      "type": "email"
-    },
-    {
-      "id": 9,
-      "title": "email address",
-      "key": "email",
-      "type": "email"
+      "title": "education",
+      "key": "education",
+      "type": "textfield"
     }
   ]

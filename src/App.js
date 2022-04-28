@@ -7,7 +7,6 @@ import Build from './components/pages/Build';
 import View from './components/pages/View';
 import About from './components/pages/About';
 import Contact from './components/pages/Contact';
-import SignIn from './components/pages/SignIn';
 
 function App() {
   return (
@@ -20,7 +19,6 @@ function App() {
           <Route path='/view' element={<View />} />
           <Route path='/about' element={<About />} />
           <Route path='/contact' element={<Contact />} />
-          <Route path='/sign-in' element={<SignIn />} />
         </Routes>
       </BrowserRouter>
     </div>

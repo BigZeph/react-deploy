@@ -6,7 +6,7 @@ function Home () {
     return(
         <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '90vh'}}>
             <Link style ={{color: '#000'}} to='/build'>
-                <button style={{fontSize: 225}}>Begin Build</button>
+                <button style={{fontSize: 100}}>Begin Build</button>
             </Link>
         </div>
     );

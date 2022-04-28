@@ -1,0 +1,21 @@
+.contact {
+    margin: auto;
+    width: 50%;
+    text-align:center;
+}
+.contact form {
+    margin-top: 20px;
+    display: grid;
+}
+.contact h1 {
+    margin-top: 50px;
+}
+.contact h2, p {
+    margin-top: 30px;
+}
+.contact textarea, .contact input {
+    font-size: 15px;
+}
+.contact textarea {
+    height: 150px;
+}

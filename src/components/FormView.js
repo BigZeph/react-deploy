@@ -1,4 +1,4 @@
-import React, {useState, Fragment} from "react";
+import React, {Fragment} from "react";
 import data from "../mock-data.json";
 import FormInput from "./FormInput";
 import "./FormView.css";

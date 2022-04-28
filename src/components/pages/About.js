@@ -1,11 +1,9 @@
 import React from 'react';
-import '../../App.css';
+import AboutSection from '../AboutSection';
 
 function About () {
     return(
-        <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '90vh'}}>
-            <h1>About</h1>
-        </div>
+        <AboutSection />
     );
 };
 

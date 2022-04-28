@@ -1,13 +1,10 @@
 const FormInput = ({element}) => {
 	const parseElement = (element) => {
-		if(element.type == "textfield") return (
-			<input type="text" placeholder="text field"></input>
+		if(element.type === "textfield" || element.type === "email") return (
+			<input id="text" type="text" placeholder={element.type}></input>
 		);
-		else if(element.type == "HTML") return (
-			<i>(HTML placeholder)</i>
-		);
-		else if(element.type == "email") return (
-			<input type="text" placeholder="e-mail address"/>
+		else if(element.type === "HTML") return (
+			<i>(HTML Placeholder)</i>
 		);
 		else return (
 			<i>(unidentified element)</i>
