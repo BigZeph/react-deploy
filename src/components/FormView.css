@@ -1,8 +1,5 @@
 #viewform {
-	background-color: #9c8ad3;
 	display: inline;
-	padding: 5pt;
-	text-align: center;
 }
 
 #viewform div {
@@ -14,10 +11,51 @@
 	border: 0;
 	border-radius: 5px;
 	cursor: pointer;
-	margin: 10px;
+	margin-top: 10px;
 	padding: 5px;
+	width: 100%;
 }
 
 #viewform input[type=submit]:hover {
 	background-color: #aa99ee;
+}
+
+.form-header {
+	border-radius: 10px 10px 0 0;
+	text-align: center;
+	background-color: #9c8ad3;
+	padding: 10px;
+}
+
+.form-body {
+	background-color: #ccbbff;
+	padding: 20px;
+	padding-bottom: 10px;
+	text-align: center;
+}
+
+.form-body input {
+	margin: 1px auto;
+	width: 100%;
+}
+
+.form-footer {
+	background-color: #ccbbff;
+	border-radius: 0 0 10px 10px;
+	padding: 10px;
+	padding-top: 5px;
+	text-align: center;
+}
+
+.form-footer button {
+	background-color: #bbaaff;
+	border: none;
+	border-radius: 5px;
+	padding: 5px;
+	width: 100%;
+}
+.form-footer button:hover {
+	background-color: #aa99ee;
+	cursor: pointer;
+	text-align: center;
 }

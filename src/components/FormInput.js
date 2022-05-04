@@ -1,19 +1,25 @@
-const FormInput = ({element}) => {
-	const parseElement = (element) => {
-		if(element.type === "textfield" || element.type === "email") return (
-			<input id="text" type="text" placeholder={element.type}></input>
-		);
-		else if(element.type === "HTML") return (
-			<i>(HTML Placeholder)</i>
-		);
-		else return (
-			<i>(unidentified element)</i>
-		);
+const FormInput = ({element, value, handleEditChange}) => {
+	const types = {
+		text: ["textfield", "email", "html"],
+		password: ["password"]
+	};
+
+	const parseType = (element_type) => {
+		for(var type in types) if(element_type in types[type]) return type;
+		return null;
 	};
 
 	return (
-		<div>
-			{parseElement(element)}
+		<div>					
+			{
+				<input
+					type={() => parseType(element.type)}
+					name={element.key}
+					placeholder={element.title}
+					value={value}
+					onChange={handleEditChange}
+				/>
+			}
 		</div>
 	);
 };

@@ -6,3 +6,26 @@
     margin: 0;
     padding: 0;
 }
+
+/* Used by Table and FormView */
+.purple_button {
+	border: 1px solid black;
+	padding: 10px;
+	margin: 10px 5px;
+	background-color: #cbcbe3;
+}
+.purple_button:hover {
+	cursor: pointer;
+}
+#activeFormButton {
+	background-color: #bbbbdd;
+}
+
+/* Disable text selection */
+nav, th, .form-header, .form-body, .form-footer, .purple_button {
+	user-select: none;
+}
+
+/* CSS for mobile devices */
+@media only screen and (max-width: 400px) {
+}
