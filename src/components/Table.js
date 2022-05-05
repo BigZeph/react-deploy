@@ -130,12 +130,12 @@ const Table = () => {
         };
 
         if(!creatingForm) {
-            var url = `http://localhost:9000/update?oper=edit&key=${save[index].key}`;
+            var url = `http://localhost:9000/update?oper=edit&formName=${activeFormName}&key=${save[index].key}`;
 
             for(var attr in editFormData)
                 if(editFormData[attr] !== save[index][attr])
                     url += `&${attrMap[attr]}=${editFormData[attr]}`;
-
+            
             fetch(url, { method: "PUT" });
         }
 
@@ -176,7 +176,7 @@ const Table = () => {
         const newElements = [...elements];
         const index = elements.findIndex((element) => element.id === elementId);
 
-	    fetch(`http://localhost:9000/update?oper=delete&key=${elements[index].key}`,
+	    fetch(`http://localhost:9000/update?oper=delete&formName=${activeFormName}&key=${elements[index].key}`,
         { method: "DELETE" });
 
         newElements.splice(index, 1);
@@ -204,7 +204,7 @@ const Table = () => {
 	}
 
     useEffect(() => {
-        setNewFormName("");
+        setNewFormName(activeFormName);
         retrieveNameData();
     }, [activeFormName]);
 
