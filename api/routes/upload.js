@@ -9,7 +9,7 @@ conn.connect((err) => {
 	if(err) return err;
 });
 
-router.put("/", function (req, res, next) {
+router.put("/", function (req, res) {
 	var formName = req.query.formName;
 	delete req.query["formName"];
 

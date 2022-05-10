@@ -9,28 +9,17 @@ conn.connect((err) => {
 	if(err) return err;
 });
 
-parseType = (type) => {
-	switch(type) {
-		case "binary":
-			return "bit";
-		case "integer":
-			return "int";
-		case "decimal":
-			return "float";
-		case "textfield":
-			return "varchar(30)";
-		case "email":
-			return "varchar(30)";
-		case "HTML":
-			return "varchar(50)"; // ?
-		case "password":
-			return "varchar(30)";
-		default:
-			return "null";
-	}
+const default_data_types = {
+	date: "date",
+	email: "varchar(254)",
+	number: "int",
+	password: "varchar(30)",
+	tel: "varchar(12)",
+	textfield: "varchar(30)"
 }
 
 createForm = (query, callback) => {
+	if(query.table_name[0] == '$') return callback("Table name can't start with '$'", null);
 	var query_clone = { ...query };
 	delete query_clone["oper"];
 	delete query_clone["table_name"];
@@ -40,23 +29,23 @@ createForm = (query, callback) => {
 	for(i in values) values[i] = values[i].split(",");
 	for(i in values) {
 		if(values[i].length == 3) attributes.push("`" + keys[i] + "` " + values[i][2]);
-		else attributes.push("`" + keys[i] + "` " + parseType(values[i][1]));
+		else attributes.push("`" + keys[i] + "` " + default_data_types[values[i][1]]);
 	}
 	attributes = attributes.join(", ");
 	conn.query(`CREATE TABLE \`${query.table_name}\` (${attributes})`, (err, result) => {
 		if(err) callback(err, null);
 		else {
 			console.log(`Created table \`${query.table_name}\``);
-			conn.query(`CREATE TABLE \`${query.table_name}_data\` (\`key\` varchar(30), \`title\` varchar(30), \`type\` varchar(30))`, (err, result) => {
+			conn.query(`CREATE TABLE \`$${query.table_name}\` (\`key\` varchar(30), \`title\` varchar(30), \`type\` varchar(30))`, (err, result) => {
 				if(err) callback(err, null);
 				else {
-					console.log(`Created table \`${query.table_name}_data\``);
+					console.log(`Created table \`$${query.table_name}\``);
 					for(i in keys) {
-						conn.query(`INSERT INTO \`${query.table_name}_data\` (\`key\`, \`title\`, \`type\`) VALUES ("${keys[i]}", "${values[i][0]}", "${values[i][1]}")`, (err, result) => {
+						conn.query(`INSERT INTO \`$${query.table_name}\` (\`key\`, \`title\`, \`type\`) VALUES ("${keys[i]}", "${values[i][0]}", "${values[i][1]}")`, (err, result) => {
 							if(err) callback(err, null);
 							else {
 								console.log(`${result.affectedRows} row(s) inserted into \`${query.table_name}_data\``);
-								callback(null, "Done!");
+								callback(null, true);
 							}
 						});
 					}
@@ -67,15 +56,17 @@ createForm = (query, callback) => {
 }
 
 editFormName = (old_form_name, new_form_name, callback) => {
-	conn.query(`rename table \`${old_form_name}\` to \`${new_form_name}\``, (err, result1) => {
+	if(old_form_name[0] == "$") callback("You're not allowed to do that", null);
+	else if(new_form_name[0] == "$") callback("Table can't start with '$'", null);
+	else conn.query(`rename table \`${old_form_name}\` to \`${new_form_name}\``, (err, result1) => {
 		if(err) callback(err, null);
 		else {
 			console.log(`Successfully renamed table \`${old_form_name}\` to \`${new_form_name}\``);
-			conn.query(`rename table \`${old_form_name}\_data\` to \`${new_form_name}_data\``,
+			conn.query(`rename table \`$${old_form_name}\` to \`$${new_form_name}\``,
 			(err, result2) => {
 				if(err) callback(err, null);
 				else {
-					console.log(`Successfully renamed table \`${old_form_name}_data\` to \`${new_form_name}_data\``);
+					console.log(`Successfully renamed table \`$${old_form_name}\` to \`$${new_form_name}\``);
 					callback(null, true);
 				}
 			});
@@ -84,15 +75,16 @@ editFormName = (old_form_name, new_form_name, callback) => {
 }
 
 dropForm = (form_name, callback) => {
-	conn.query(`drop table \`${form_name}\``, (err, result) => {
+	if(form_name == "$") callback("You're not allowed to do that", null);
+	else conn.query(`drop table \`${form_name}\``, (err, result) => {
 		if(err) callback(err, null);
 		else {
 			console.log(`Dropped table \`${form_name}\``);
-			conn.query(`drop table \`${form_name}_data\``, (err, result) => {
+			conn.query(`drop table \`$${form_name}\``, (err, result) => {
 				if(err) callback(err, null);
 				else {
-					console.log(`Dropped table \`${form_name}_data\``);
-					callback(null, "Done!");
+					console.log(`Dropped table \`$${form_name}\``);
+					callback(null, true);
 				}
 			});
 		}
@@ -100,13 +92,14 @@ dropForm = (form_name, callback) => {
 }
 
 addRow = (query, callback) => {
+	if(query.formName[0] == "$") return callback("You're not allowed to do that", null);
 	var query_clone = { ...query };
 	delete query_clone["oper"];
 	delete query_clone["formName"];
 	var keys = "`" + Object.keys(query_clone).join('\`, \`') + "`";
 	var values = '"' + Object.values(query_clone).join('", "') + '"';
 	var callback_data = [];
-	conn.query(`INSERT INTO \`${query.formName}_data\` (${keys}) VALUES (${values})`, (err, result) => {
+	conn.query(`INSERT INTO \`$${query.formName}\` (${keys}) VALUES (${values})`, (err, result) => {
 		if(err) callback(err, null);
 		else {
 			console.log(`Inserted ${result.affectedRows} row(s) into \`${query.formName}\``);
@@ -126,7 +119,7 @@ editRowLoop = (query, formName, key, callback) => {
 		var attr = Object.keys(query)[0];
 		var value = Object.values(query)[0];
 		var search_key = (attr == "new_key") ? "key" : attr;
-		conn.query(`UPDATE ${formName}_data SET \`${search_key}\`="${value}" WHERE \`key\`="${key}"`,
+		conn.query(`UPDATE \`$${formName}\` SET \`${search_key}\`="${value}" WHERE \`key\`="${key}"`,
 		(err, result) => {
 			if(err) callback(err, null, null, true);
 			if(attr == "new_key") key = query.new_key;
@@ -142,7 +135,8 @@ editRowCallback = (err, query, formName, key, done) => {
 }
 
 editRow = (query, callback) => {
-	if("key" in query) {
+	if(query.formName[0] == "$") callback("You're not allowed to do that", null);
+	else if("key" in query) {
 		var query_clone = { ...query };
 		var formName = query.formName;
 		var key = query.key;
@@ -150,15 +144,19 @@ editRow = (query, callback) => {
 		delete query_clone["formName"];
 		delete query_clone["key"];
 		editRowLoop(query_clone, formName, key, editRowCallback);
-		callback(null, "Edit successful");
+		callback(null, true);
 	} else callback("Failed to edit", null);
 }
 
 deleteRow = (query, callback) => {
-	if(!("key" in query)) callback("No key provided", null);
-	conn.query(`DELETE FROM ${query.formName}_data WHERE \`key\`="${query.key}"`, (err, result) => {
+	if(query.formName[0] == "$") callback("You're not allowed to do that", null);
+	else if(!("key" in query)) callback("No key provided", null);
+	else conn.query(`DELETE FROM \`$${query.formName}\` WHERE \`key\`="${query.key}"`, (err, result) => {
 		if(err) callback(err, null);
-		else callback(null, result);
+		else {
+			console.log(result);
+			callback(null, true);
+		}
 	});
 }
 
@@ -167,25 +165,25 @@ router.put("/", (req, res) => {
 		case "create":
 			createForm(req.query, (err, result) => {
 				if(err) console.log(err);
-				else console.log(result);
+				else res.send({success: result});
 			});
 			break;
 		case "rename":
 			editFormName(req.query.formName, req.query.newFormName, (err, result) => {
 				if(err) console.log(err);
-				else console.log(result ? "Success" : "Failed");
+				else res.send({success: result});
 			});
 			break;
 		case "add":
 			addRow(req.query, (err, result) => {
 				if(err) console.log(err, err);
-				else console.log(result ? "Success" : "Failed");
+				else res.send({success: result});
 			});
 			break;
 		case "edit":
 			editRow(req.query, (err, result) => {
 				if(err) console.log(err);
-				else console.log(result);
+				else res.send({success: result});
 			});
 			break;
 		default:
@@ -198,13 +196,16 @@ router.delete("/", (req, res) => {
 		case "delete":
 			deleteRow(req.query, (err, result) => {
 				if(err) console.log(err);
-				else console.log(`Deleted ${result.affectedRows} row(s)`);
+				else {
+					console.log(`Deleted ${result.affectedRows} row(s)`);
+					res.send({success: true});
+				}
 			});
 			break;
 		case "drop":
 			dropForm(req.query.formName, (err, result) => {
 				if(err) console.log(err);
-				else console.log(result);
+				else res.send({success: result});
 			});
 			break;
 		default:

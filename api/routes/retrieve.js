@@ -11,7 +11,7 @@ conn.connect((err) => {
 
 getFormData = (query, callback) => {
 	json_data = []
-	conn.query(`SELECT * FROM \`${query.formName}_data\``, (err, result, fields) => {
+	conn.query(`SELECT * FROM \`$${query.formName}\``, (err, result, fields) => {
 		if(err) callback(err, null);
 		for(rdpi in result) { // RowDataPacket index
 			var field  = result[rdpi].Field;
@@ -27,7 +27,7 @@ getFormData = (query, callback) => {
 }
 
 getFormNames = (callback) => {
-	conn.query("show tables where Tables_in_purpledb not like '%\_data'", (err, result) => {
+	conn.query("show tables where Tables_in_purpledb not like '$%'", (err, result) => {
 		if(err) callback(err, null);
 		else callback(null, result);
 	});
