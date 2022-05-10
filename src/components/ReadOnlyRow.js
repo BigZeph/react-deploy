@@ -7,8 +7,10 @@ const ReadOnlyRow = ({ element, handleEditClick, handleDeleteClick }) => {
         <td>{element.key}</td>
         <td>{element.type}</td>
         <td>
-            <button type="button" onClick={(event) => handleEditClick(event, element)}>edit</button>
-            <button type="button" onClick={() =>  handleDeleteClick(element.id)}>delete</button>
+            <div>
+              <button type="button" onClick={(event) => handleEditClick(event, element)}>edit</button>
+              <button type="button" onClick={() =>  handleDeleteClick(element.id)}>delete</button>
+            </div>
         </td>
     </tr>
   )

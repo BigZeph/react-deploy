@@ -4,6 +4,7 @@ import data from "../mock-data.json";
 import { nanoid } from 'nanoid';
 import ReadOnlyRow from './ReadOnlyRow';
 import EditableRow from './EditableRow';
+import NewRow from './NewRow';
 
 const Table = () => {
     const [elements, setElements] = useState(data);
@@ -35,9 +36,9 @@ const Table = () => {
 
     const handleAddPage = (event) => {
 	    event.preventDefault();
-        if(formNames.indexOf("new_table") === -1) {
-            setFormNames([...formNames, "new_table"]);
-            setActiveFormName("new_table");
+        if(formNames.indexOf("new form") === -1) {
+            setFormNames([...formNames, "new form"]);
+            setActiveFormName("new form");
             setCreatingForm(true);
         }
     }
@@ -47,15 +48,22 @@ const Table = () => {
 		fetch(`http://localhost:9000/update?oper=drop&formName=${activeFormName}`,
         { method: "DELETE" })
 		.then(res => res.json().then(json_data => {
-            if(json_data.success === 1) retrieveFormNames();
+            if(json_data.success) {
+                retrieveFormNames();
+                setNewFormName("");
+            }
         }));
 	}
 
     const handleCreateForm = (event) => {
         var url=`http://localhost:9000/update?oper=create&table_name=${newFormName}`;
         for(var i in elements) url += `&${elements[i].key}=${elements[i].title},${elements[i].type}`;
-        fetch(url, { method: "PUT" });
-        setCreatingForm(false);
+        fetch(url, { method: "PUT" })
+        .then(res => {
+            retrieveFormNames();
+            setCreatingForm(false);
+            setActiveFormName(newFormName);
+        });
     }
     const handleCancelCreateForm = (event) => {
         event.preventDefault();
@@ -70,10 +78,12 @@ const Table = () => {
     const handleChangeFormNameSubmit = (event) => {
         event.preventDefault();
         fetch(`http://localhost:9000/update?oper=rename&formName=${activeFormName}&newFormName=${newFormName}`, {method: "PUT"})
-        .then(() => {
-            retrieveFormNames();
-            setActiveFormName(newFormName);
-        });
+        .then(res => res.json().then(json_data => {
+            if(json_data.success) {
+                retrieveFormNames();
+                setActiveFormName(newFormName);
+            }
+        }));
     }
 
     const handleAddFormChange = (event) => {
@@ -113,7 +123,14 @@ const Table = () => {
         if(!creatingForm)
             fetch(`http://localhost:9000/update?oper=add&formName=${activeFormName}&key=${addFormData.key}&type=${addFormData.type}&title=${addFormData.title}`,
             { method: "PUT" });
-
+        
+        setAddFormData({
+            title: "",
+            key: "",
+            type: ""
+        });
+        setClickElement(false);
+        
         const newElements = [...elements, newElement];
         setElements(newElements);
     }
@@ -204,67 +221,53 @@ const Table = () => {
 	}
 
     useEffect(() => {
+        if(formNames.length > 0 & activeFormName == null) setActiveFormName(formNames[0]);
+    }, [formNames]);
+
+    useEffect(() => {
         setNewFormName(activeFormName);
-        retrieveNameData();
+        if(creatingForm) {
+            setElements([]);
+            setSave([]);
+        } else retrieveNameData();
     }, [activeFormName]);
 
     useEffect(() => {
         retrieveFormNames();
-        setActiveFormName(formNames[0]);
     }, []);
 
     return (
         <div className="table-container">
-            <button style={{width: 100, height: 50}} onClick={handleClickElement}>add element</button>
-            <button style={{width: 100, height: 50}} onClick={handleAddPage}>add page</button>
-            <button style={{width: 100, height: 50}} onClick={handleDropPage}>drop page</button>
-            <button style={{width: 100, height: 50}}>add layout</button>
+            <div>
+                <button style={{width: 100, height: 50}} onClick={handleClickElement}>add element</button>
+                <button style={{width: 100, height: 50}} onClick={handleAddPage}>add page</button>
+                <button style={{width: 100, height: 50}} onClick={handleDropPage}>drop page</button>
+                <button style={{width: 100, height: 50}}>add layout</button>
+            </div>
             <br />
+            <div>
             {formNames.map((formName) => {
                 return (
                     <button class="purple_button" style={{width: 100, height: 50}}
                         id={formName === activeFormName ? "activeFormButton" : null }
                         onClick={() => {if(!creatingForm) setActiveFormName(formName)}}>
-                        {formName}
+                        {(formName === activeFormName) & creatingForm ?
+                            newFormName : formName
+                        }
                     </button>
                 );
             })}
-            <form onSubmit={handleChangeFormNameSubmit}>
-                <input type="text" value={newFormName} onChange={handleChangeFormName}
-                    placeholder={creatingForm ? "new table name" : null } />
-                <input type="submit" hidden={creatingForm} value="Change Form Name" />
-            </form><br />
-            <form id="new_element" onSubmit={handleAddFormSubmit}>
-                <input
-                type={clickElement ? "text" : "hidden"}
-                name="title"
-                required="required"
-                placeholder="Enter title..."
-                onChange={handleAddFormChange}
-                />
-                <input
-                type={clickElement ? "text" : "hidden"}
-                name="key"
-                required="required"
-                placeholder="Enter key..."
-                onChange={handleAddFormChange}
-                />
-                <label hidden={!clickElement && 'hidden'} for="type">type:</label>
-                <select
-                    hidden={!clickElement && 'hidden'}
-                    id="type"
-                    name="type"
-                    onChange={handleAddFormChange}
-                    required
-                >
-                    <option value="" disabled selected hidden>choose type</option>
-                    <option value="HTML">HTML</option>
-                    <option value="textfield">textfield</option>
-                    <option value="email">email</option>
-                </select>
-                <button hidden={!clickElement && 'hidden'} type="submit">add</button>
-                <button hidden={!clickElement && 'hidden'} onClick={handleClickElement} type="button">cancel</button>
+            </div>
+            <br />
+            <form id="changeNameForm" onSubmit={handleChangeFormNameSubmit}>
+                <div>
+                    <input type="text" value={newFormName} onChange={handleChangeFormName}
+                        placeholder="form name"/>
+                    &nbsp;
+                    <input type="submit" hidden={creatingForm} value="Change" />
+                </div>
             </form>
+            <br />
             <form onSubmit={handleEditFormSubmit}>
                 <table>
                     <thead>
@@ -292,6 +295,14 @@ const Table = () => {
                                         />}
                             </Fragment>
                         ))}
+                        {
+                            clickElement ?
+                            <NewRow addFormData={addFormData}
+                                handleClickElement={handleClickElement}
+                                handleAddFormChange={handleAddFormChange}
+                                handleAddFormSubmit={handleAddFormSubmit}
+                            /> : null
+                        }
                     </tbody>
 	    	    </table>
             </form>
