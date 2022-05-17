@@ -69,3 +69,37 @@ border-bottom: 1px solid rgb(187, 187, 187);
 .menu-item:hover {
   color: #2980b9;
 }
+
+.order {
+  width: 10%;
+}
+
+.order div {
+  display: flex;
+  justify-content: space-evenly;
+  width: 100%;
+}
+
+.order div input {
+  width: 100%;
+}
+
+tr div {
+  display: flex;
+}
+
+#table-footer {
+  text-align: right;
+}
+#table-footer button {
+  font-size: 15pt;
+  padding: 10pt;
+}
+#addPageButton {
+  background-color: #cbc3e3;
+  border: 1px solid white;
+  width: 100%;
+}
+#addPageButton:hover {
+  background-color: #9c8ad3;
+}

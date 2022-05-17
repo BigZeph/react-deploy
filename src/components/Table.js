@@ -1,18 +1,18 @@
-import {useState, Fragment, useEffect} from 'react';
+import React, {useState, useEffect, Fragment} from 'react';
+import axios from 'axios';
 import './Table.css';
 import data from "../mock-data.json";
-import { nanoid } from 'nanoid';
 import ReadOnlyRow from './ReadOnlyRow';
 import EditableRow from './EditableRow';
 import NewRow from './NewRow';
 
 const Table = () => {
     const [elements, setElements] = useState(data);
-    const [save, setSave] = useState(elements);
     const [activeFormName, setActiveFormName] = useState(null);
     const [formNames, setFormNames] = useState([]);
     const [newFormName, setNewFormName] = useState("");
     const [creatingForm, setCreatingForm] = useState(false);
+    const [unsavedChanges, setUnsavedChanges] = useState(false);
 
     const [addFormData, setAddFormData] = useState({
         title: "",
@@ -30,12 +30,19 @@ const Table = () => {
 
     const [clickElement, setClickElement] = useState(false);
 
+    const reorderElements = () => {
+        var keys = [];
+        var url = `http://localhost:9000/fields?oper=reorder&form=${activeFormName}&keys=`;
+        elements.forEach(element => keys.push(element.key));
+        url = url + keys.join(",");
+        axios.put(url).then(res => retrieveNameData());
+    }
+
     const handleClickElement = () => {
         setClickElement(!clickElement);
     }
 
-    const handleAddPage = (event) => {
-	    event.preventDefault();
+    const handleAddPage = () => {
         if(formNames.indexOf("new form") === -1) {
             setFormNames([...formNames, "new form"]);
             setActiveFormName("new form");
@@ -43,23 +50,22 @@ const Table = () => {
         }
     }
 
-    const handleDropPage = (event) => {
-		event.preventDefault();
-		fetch(`http://localhost:9000/update?oper=drop&formName=${activeFormName}`,
-        { method: "DELETE" })
-		.then(res => res.json().then(json_data => {
-            if(json_data.success) {
-                retrieveFormNames();
-                setNewFormName("");
-            }
-        }));
+    const handleDropPage = () => {
+		axios.delete(`http://localhost:9000/forms?form=${activeFormName}`)
+		.then(res => {
+            reorderElements();
+            retrieveFormNames();
+            setNewFormName("");
+        });
 	}
 
-    const handleCreateForm = (event) => {
-        var url=`http://localhost:9000/update?oper=create&table_name=${newFormName}`;
-        for(var i in elements) url += `&${elements[i].key}=${elements[i].title},${elements[i].type}`;
-        fetch(url, { method: "PUT" })
+    const handleCreateForm = () => {
+        var url=`http://localhost:9000/forms?oper=create&form=${newFormName}`;
+        for(var i in elements)
+            url += `&${elements[i].key}=${elements[i].title},${elements[i].type}`;
+        axios.put(url)
         .then(res => {
+            setUnsavedChanges(false);
             retrieveFormNames();
             setCreatingForm(false);
             setActiveFormName(newFormName);
@@ -77,13 +83,11 @@ const Table = () => {
     }
     const handleChangeFormNameSubmit = (event) => {
         event.preventDefault();
-        fetch(`http://localhost:9000/update?oper=rename&formName=${activeFormName}&newFormName=${newFormName}`, {method: "PUT"})
-        .then(res => res.json().then(json_data => {
-            if(json_data.success) {
-                retrieveFormNames();
-                setActiveFormName(newFormName);
-            }
-        }));
+        axios.put(`http://localhost:9000/forms?oper=rename&old_form=${activeFormName}&new_form=${newFormName}`)
+        .then(res => {
+            retrieveFormNames();
+            setActiveFormName(newFormName);
+        });
     }
 
     const handleAddFormChange = (event) => {
@@ -114,16 +118,14 @@ const Table = () => {
         event.preventDefault();
 
         const newElement = {
-            id: nanoid(),
+            id: elements.length + 1,
             title: addFormData.title,
             key: addFormData.key,
             type: addFormData.type
         }
 
-        if(!creatingForm)
-            fetch(`http://localhost:9000/update?oper=add&formName=${activeFormName}&key=${addFormData.key}&type=${addFormData.type}&title=${addFormData.title}`,
-            { method: "PUT" });
-        
+        if(!creatingForm) axios.put(`http://localhost:9000/fields?oper=add&form=${activeFormName}&key=${addFormData.key}&type=${addFormData.type}&title=${addFormData.title}`);
+
         setAddFormData({
             title: "",
             key: "",
@@ -137,8 +139,9 @@ const Table = () => {
 
     const handleEditFormSubmit = (event) => {
         event.preventDefault();
-
+        
         const index = elements.findIndex((element) => element.id === editElementId);
+        const oldElement = elements[index];
 
         const attrMap = {
             key: "new_key",
@@ -146,14 +149,13 @@ const Table = () => {
             title: "title"
         };
 
-        if(!creatingForm) {
-            var url = `http://localhost:9000/update?oper=edit&formName=${activeFormName}&key=${save[index].key}`;
+        if(!creatingForm) { 
+            var url = `http://localhost:9000/fields?oper=edit&form=${activeFormName}&key=${oldElement.key}`;
 
-            for(var attr in editFormData)
-                if(editFormData[attr] !== save[index][attr])
-                    url += `&${attrMap[attr]}=${editFormData[attr]}`;
+            for(var attr in editFormData) if(editFormData[attr] !== oldElement[attr])
+                url += `&${attrMap[attr]}=${editFormData[attr]}`;
             
-            fetch(url, { method: "PUT" });
+            axios.put(url);
         }
 
         const editedElement = {
@@ -168,12 +170,10 @@ const Table = () => {
         newElements[index] = editedElement;
 
         setElements(newElements);
-        setSave(newElements);
         setEditElementId(null);
     }
 
-    const handleEditClick = (event, element) => {
-        event.preventDefault();
+    const handleEditClick = (element) => {
         setEditElementId(element.id);
 
         const formValues = {
@@ -193,8 +193,7 @@ const Table = () => {
         const newElements = [...elements];
         const index = elements.findIndex((element) => element.id === elementId);
 
-	    fetch(`http://localhost:9000/update?oper=delete&formName=${activeFormName}&key=${elements[index].key}`,
-        { method: "DELETE" });
+	    axios.delete(`http://localhost:9000/fields?oper=delete&form=${activeFormName}&key=${elements[index].key}`);
 
         newElements.splice(index, 1);
 
@@ -202,23 +201,51 @@ const Table = () => {
     }
 
     const retrieveFormNames = () => {
-        fetch(`http://localhost:9000/retrieve?data=formNames`)
-        .then(res => res.json().then(json_data => {
+        axios.get(`http://localhost:9000/forms`)
+        .then(res => {
             var newFormNames = [];
-            for(var formName in json_data) newFormNames.push(json_data[formName].Tables_in_purpledb);
+            for(var formName in res.data) newFormNames.push(res.data[formName].Tables_in_purpledb);
             setFormNames(newFormNames);
-        }));
+        });
     }
 
     const retrieveNameData = () => {
         if(!(activeFormName === undefined | activeFormName === null)) {
-            fetch(`http://localhost:9000/retrieve?data=formData&formName=${activeFormName}`)
-		    .then(res => res.json().then(json_data => {
-                setElements(json_data);
-                setSave(json_data);
-            }));
+            axios.get(`http://localhost:9000/fields?form=${activeFormName}`)
+		    .then(res => setElements(res.data));
         }
 	}
+    
+    const handleOrderChange = (event, element, increment) => {
+        event.preventDefault();
+        const old_index = elements.indexOf(element);
+        const new_index = increment ? old_index + 1 : old_index - 1;
+        if(0 <= new_index & new_index < elements.length) {
+            var newElements = [...elements];
+            const moving_element = newElements.splice(old_index, 1, elements[new_index])[0];
+            newElements.splice(new_index, 1, moving_element);
+            setElements(newElements);
+            setUnsavedChanges(true);
+        }
+    }
+
+    const handleOrderSubmit = () => {
+        reorderElements();
+        setUnsavedChanges(false);
+    }
+    const handleOrderCancel = () => {
+        var newElements = [...elements];
+        newElements.sort((a, b) => {
+            if(a.id < b.id) return -1;
+            else if(a.id > b.id) return 1;
+            else return 0;
+        });
+        setElements(newElements);
+        setUnsavedChanges(false);
+    }
+
+    useEffect(() => {
+    }, [elements]);
 
     useEffect(() => {
         if(formNames.length > 0 & activeFormName == null) setActiveFormName(formNames[0]);
@@ -226,10 +253,8 @@ const Table = () => {
 
     useEffect(() => {
         setNewFormName(activeFormName);
-        if(creatingForm) {
-            setElements([]);
-            setSave([]);
-        } else retrieveNameData();
+        if(creatingForm) setElements([]);
+        else retrieveNameData();
     }, [activeFormName]);
 
     useEffect(() => {
@@ -242,7 +267,6 @@ const Table = () => {
                 <button style={{width: 100, height: 50}} onClick={handleClickElement}>add element</button>
                 <button style={{width: 100, height: 50}} onClick={handleAddPage}>add page</button>
                 <button style={{width: 100, height: 50}} onClick={handleDropPage}>drop page</button>
-                <button style={{width: 100, height: 50}}>add layout</button>
             </div>
             <br />
             <div>
@@ -262,16 +286,17 @@ const Table = () => {
             <form id="changeNameForm" onSubmit={handleChangeFormNameSubmit}>
                 <div>
                     <input type="text" value={newFormName} onChange={handleChangeFormName}
-                        placeholder="form name"/>
+                        placeholder="form name" />
                     &nbsp;
                     <input type="submit" hidden={creatingForm} value="Change" />
                 </div>
             </form>
             <br />
-            <form onSubmit={handleEditFormSubmit}>
+            <form style={{display: 'initial'}} onSubmit={handleEditFormSubmit}>
                 <table>
                     <thead>
                         <tr>
+                            <th>ID</th>
                             <th>Title</th>
                             <th>Key</th>
                             <th>Type</th>
@@ -290,6 +315,7 @@ const Table = () => {
                                         :
                                         <ReadOnlyRow
 	                                        element={element}
+                                            handleOrderChange={handleOrderChange}
 	                                        handleEditClick={handleEditClick}
 	                                        handleDeleteClick={handleDeleteClick}
                                         />}
@@ -307,11 +333,20 @@ const Table = () => {
 	    	    </table>
             </form>
             <br />
-            <button style={{width: 100, height: 50}} hidden={!creatingForm}
-                onClick={handleCreateForm}>Finish</button>
-            <button style={{width: 100, height: 50}} hidden={!creatingForm}
-                onClick={handleCancelCreateForm}>Cancel
-            </button>
+            <div id="table-footer">
+                <button hidden={(!unsavedChanges)|creatingForm} onClick={handleOrderSubmit}>
+                    Save
+                </button>
+                <button hidden={(!unsavedChanges)|creatingForm} onClick={handleOrderCancel}>
+                    Cancel
+                </button>
+                <button hidden={!creatingForm} onClick={handleCreateForm}>
+                    Finish
+                </button>
+                <button hidden={!creatingForm} onClick={handleCancelCreateForm}>
+                    Cancel
+                </button>
+            </div>
 	    </div>
     )
 }

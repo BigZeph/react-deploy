@@ -27,7 +27,7 @@ button:hover, input[type="submit"]:hover {
 }
 
 /* Disable text selection */
-nav, th, .form-header, .form-body, .form-footer, .purple_button {
+nav, th, .form-header, .form-body, .form-footer, .purple_button, .input_label {
 	user-select: none;
 }
 

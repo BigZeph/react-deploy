@@ -3,6 +3,7 @@ import React from 'react'
 const EditableRow = ({ editFormData, handleEditFormChange, handleCancelClick }) => {
   return (
     <tr>
+        <td />
         <td>
             <input 
             text="text" 
@@ -33,6 +34,7 @@ const EditableRow = ({ editFormData, handleEditFormChange, handleCancelClick }) 
             >
                 <option value="HTML">HTML</option>
                 <option value="textfield">textfield</option>
+                <option value="textarea">textarea</option>
                 <option value="email">email</option>
                 <option value="password">password</option> 
                 <option value="date">date</option>
@@ -40,7 +42,7 @@ const EditableRow = ({ editFormData, handleEditFormChange, handleCancelClick }) 
                 <option value="phone">phone</option>
             </select>
         </td>
-        <td>
+        <td style={{display: 'flex'}}>
             <button type="submit">save</button>
             <button type="button" onClick={handleCancelClick}>cancel</button>
         </td>

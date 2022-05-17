@@ -1,35 +1,33 @@
-import {Fragment, useEffect, useState} from "react";
+import React, {Fragment, useEffect, useState} from "react";
+import axios from "axios";
 import FormInput from "./FormInput";
 import mockdata from "../mock-data.json";
 import "./FormView.css";
 
 const FormView = () => {
 	const [data, setData] = useState(mockdata);
-	const [activeFormName, setActiveFormName] = useState(null);
-	const [formNames, setFormNames] = useState([]);
+	const [activeForm, setActiveFormName] = useState(null);
+	const [forms, setForms] = useState([]);
 	const [formData, setFormData] = useState({});
 
-	const retrieveFormNames = () => {
-        fetch(`http://localhost:9000/retrieve?data=formNames`)
-        .then(res => res.json().then(json_data => {
-            var newFormNames = [];
-            for(var formName in json_data) newFormNames.push(json_data[formName].Tables_in_purpledb);
-            setFormNames(newFormNames);
-            setActiveFormName(newFormNames[0]);
-        }))
-        .catch(error => console.log(error));
+	const retrieveForms = () => {
+        axios.get(`http://localhost:9000/forms`)
+        .then(res => {
+            var newForms = [];
+            for(var form in res.data) newForms.push(res.data[form].Tables_in_purpledb);
+            setForms(newForms);
+            setActiveFormName(newForms[0]);
+        }).catch(error => console.log(error));
     }
 
 	const retrieveData = () => {
 		var newFormData = {};
-		console.log("activeFormName", activeFormName);
-		fetch(`http://localhost:9000/retrieve?data=formData&formName=${activeFormName}`)
-		.then(res => res.json().then(json_data => {
-			for(var index in json_data) newFormData[json_data[index].key] = "";
-			setData(json_data);
+		axios.get(`http://localhost:9000/fields?form=${activeForm}`)
+		.then(res => {
+			for(var index in res.data) newFormData[res.data[index].key] = "";
+			setData(res.data);
 			setFormData(newFormData);
-		}))
-		.catch(err => console.log(err));
+		}).catch(err => console.log(err));
 	}
 
 	const handleEditChange = (event) => {
@@ -39,43 +37,37 @@ const FormView = () => {
 		setFormData(newFormData);
 	}
 
-	const uploadData = (event) => {
-		event.preventDefault();
-		var url = `http://localhost:9000/upload?formName=${activeFormName}`;
+	const uploadData = () => {
+		var url = `http://localhost:9000/rows?form=${activeForm}`;
 		for(var attr in formData) url += `&${attr}=${formData[attr]}`;
-		fetch(url, { method: "PUT" })
-		.then(res => res.text().then(text => {console.log(text)}));
+		axios.put(url);
 	}
 
 	useEffect(() => {
-		console.log(formData);
-	}, [formData]);
-
-	useEffect(() => {
-		if(activeFormName != null) retrieveData();
-	}, [activeFormName]);
+		if(activeForm != null)
+			retrieveData();
+	}, [activeForm]);
 	
 	useEffect(() => {
-		retrieveFormNames();
+		retrieveForms();
 	}, []);
 
 	return (
-		<div>
-			{formNames.map((formName) => {
+		<div id="viewform-container">
+			{forms.map((form) => {
                 return (
                     <button class="purple_button" style={{width: 100, height: 50}}
-                        id={formName === activeFormName ? "activeFormButton" : null}
-                        onClick={() => setActiveFormName(formName)}
-					>
-                        {formName}
+						id={form === activeForm ? "activeFormButton" : null}
+						onClick={() => setActiveFormName(form)}>
+					{form}
                     </button>
                 );
             })}
-			<form id="viewform" onSubmit={uploadData}>
-				<div class="form-header">
-					<h1>Your Form:</h1>
-				</div>
-				<div class="form-body">
+			<div id="form-header">
+				<h1>{activeForm}</h1>
+			</div>
+			<div id="form-body">
+				<form id="viewform" onSubmit={uploadData}>
 					{data.map((element) => (
 						<Fragment>
 							{
@@ -87,11 +79,9 @@ const FormView = () => {
 							}
 						</Fragment>
 					))}
-				</div>
-				<div class="form-footer">
 					<input type="submit" value="Upload Data" onClick={uploadData} />
-				</div>
-			</form>
+				</form>
+			</div>
 		</div>
 	);
 }

@@ -4,8 +4,8 @@ import FormView from '../FormView';
 
 function View () {
     return(
-        <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '90vh'}}>
-	    <FormView />
+        <div style={{justifyContent: 'center', alignItems: 'center', height: '90vh'}}>
+	        <FormView />
         </div>
     );
 };

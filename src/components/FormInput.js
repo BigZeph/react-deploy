@@ -1,3 +1,5 @@
+import React from "react";
+
 const FormInput = ({element, value, handleEditChange}) => {
 	const types = {
 		textfield: "text",
@@ -7,15 +9,24 @@ const FormInput = ({element, value, handleEditChange}) => {
 		number: "number",
 		phone: "tel"
 	};
+	const placeholders = {
+		phone: "123-456-7890"
+	};
 
 	return (
 		<div>
-			{<input
-				type={types[element.type]} name={element.key}
-				pattern={element.type === "phone" ? "[0-9]{3}-[0-9]{3}-[0-9]{4}" : null}
-				placeholder={element.type === "phone" ? "(123-456-7890)": element.title}
-				value={value} onChange={handleEditChange}
-			/>}
+			<span class="input_label">{element.title}: </span>
+			{
+				element.type === "textarea" ?
+				<textarea type="text" name={element.key} value={value} onChange={handleEditChange} />
+				:
+				<input
+					type={types[element.type]} name={element.key}
+					pattern={element.type === "phone" ? "[0-9]{3}-[0-9]{3}-[0-9]{4}" : null}
+					placeholder={placeholders[element.type]}
+					value={value} onChange={handleEditChange}
+				/>
+			}
 		</div>
 	);
 };
